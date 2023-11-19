@@ -1,0 +1,204 @@
+<html>
+<head>
+    <style>
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 700px;
+            margin-bottom: 30px;
+            margin-inline: 30px;
+          }
+      
+          th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+            text-align: center;
+          }
+      
+          th {
+            background-color: #f2f2f2;
+          }
+      </style>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+    
+<body>
+    <div id="menu">
+        <input type="file" id="fileInput" accept=".xlsx, .xls" />
+
+        <div>
+            <input type="radio" id="r1" name="contact" value="single"/>
+            <label for="contactChoice1">单列显示</label>
+    
+            <input type="radio" id="r2" name="contact" value="double" />
+            <label for="contactChoice2">双列显示</label>
+        </div>
+        
+        <button id="hide" style="display: hidden">隐藏菜单</button>
+    </div>
+    
+    
+</body>
+<script>    
+    let groupedData;
+    let filePath;
+    let extraNote;
+
+    function arrGroup(arr, fn) {
+        const obj = {};
+        arr.forEach(item => {
+            const key = JSON.stringify(fn(item));
+            obj[key] = obj[key] || [];
+            obj[key].push(item)
+        });
+        return Object.keys(obj).map(k => {
+            return obj[k];
+        })
+    }
+
+    function createTable(){
+        var table = document.createElement("table");
+        var table_row_1 = document.createElement("tr");
+        var table_row_2 = document.createElement("tr");
+        var table_row_3 = document.createElement("tr");
+        var table_row_4 = document.createElement("tr");
+
+        for (var i in groupedData) {
+
+            for(j=0; j<groupedData[i][0].totalAmount; j++){
+                var table = document.createElement("table");
+                table.setAttribute("id", groupedData[i][0].taskNo);
+
+                var headerRow = document.createElement("tr");
+                var headers = ["图号", "数量", "计生号", "辆份"];
+                headers.forEach(function(headerText) {
+                    var th = document.createElement("th");
+                    th.appendChild(document.createTextNode(headerText));
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+
+                groupedData[i].forEach(function (material, index) {
+                    var row = document.createElement("tr");
+        
+                    var td1 = document.createElement("td");
+                    td1.appendChild(document.createTextNode(material.materialNo));
+                    row.appendChild(td1);
+        
+                    var td2 = document.createElement("td");
+                    td2.appendChild(document.createTextNode(1));
+                    row.appendChild(td2);
+        
+                    
+                    if (index === 0) {
+                        var td3 = document.createElement("td");
+
+                        var thePlanNo = td3.appendChild(document.createTextNode(material.planNo.split("-")[1]));
+                        var span = document.createElement("span");
+                        span.style.fontSize = "25px";
+                        span.style.fontWeight = "bolder";
+                        span.appendChild(thePlanNo);
+                        td3.appendChild(span);
+                        td3.appendChild(document.createElement("br"));
+                        td3.appendChild(document.createTextNode(material.planNo + "-" + String(material.no).padStart(4, "0")));
+                        td3.appendChild(document.createElement("br"));
+                        td3.appendChild(document.createTextNode(material.special));
+                        td3.setAttribute("rowspan", groupedData[i].length);
+                        row.appendChild(td3);
+                    }
+                    
+    
+                    if (index === 0) {
+                        var td4 = document.createElement("td");
+                        td4.appendChild(document.createTextNode(material.totalAmount + "-" + (j+1)));
+                        var img = document.createElement("img");
+                        img.src = 'https://picdl.sunbangyan.cn/2023/11/18/d7a30ef05dfe0b9736b015ccd8f340c4.jpg';
+                        img.width = '100';
+                        td4.appendChild(document.createElement("br"));
+                        td4.appendChild(img);
+                        td4.appendChild(document.createElement("br"));
+                        td4.setAttribute("rowspan", groupedData[i].length + 1);
+                        td4.appendChild(document.createTextNode(extraNote));
+                        row.appendChild(td4);
+                    }
+                    
+                    table.appendChild(row);
+                })
+    
+                var row = document.createElement("tr");
+                var td = document.createElement("td");
+                td.appendChild(document.createTextNode(groupedData[i][0].taskNo));
+                td.setAttribute("colspan",3);
+                row.appendChild(td);
+                table.appendChild(row);
+    
+                document.body.appendChild(table);
+            }
+
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, { type: 'array' });
+                    var sheetName = workbook.SheetNames[0]; // 读取第一个工作表
+                    var sheet = workbook.Sheets[sheetName];
+                    var orgFile = XLSX.utils.sheet_to_json(sheet);
+
+                    console.log(orgFile);
+
+                    
+
+                    var jsonArray = orgFile.map(function(item){
+                        return{
+                            "taskNo" : item["任务号"],
+                            "materialNo" : item["物料编码"],
+                            "totalAmount" : item["总量"],
+                            "no" : item["序号"],
+                            "special" : item["特殊描述"],
+                            "planNo" : item["装配计划号"]
+                        }
+                    })
+                    //jsonArray.shift();
+                    groupedData = arrGroup(jsonArray, (item) => item.taskNo);
+
+                    console.log(jsonArray)
+
+                    extraNote = prompt("输入二维码位置显示的文字");
+
+                    createTable();
+                };
+                reader.readAsArrayBuffer(file);
+            });
+            
+        document.getElementById("hide").addEventListener('click', function(){
+            alert("菜单已隐藏，若想调整，请刷新页面重新操作")
+            document.getElementById("menu").style.display = 'none';
+        })
+
+        document.getElementById("r1").addEventListener('change', function(){
+            let tables = document.querySelectorAll('table');
+            tables.forEach(table =>{
+                table.style.width = '700px';
+                table.style.marginInline = '30px';
+                table.style.display = 'block';
+            })
+        })
+
+        document.getElementById("r2").addEventListener('change', function(){
+            let tables = document.querySelectorAll('table');
+            tables.forEach(table =>{
+                table.style.width = '340px';
+                table.style.marginInline = '20px';
+                table.style.display = 'inline-block'
+            })
+        })
+    });
+    
+</script>
+</html>
