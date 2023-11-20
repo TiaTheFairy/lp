@@ -1,24 +1,35 @@
 <html>
 <head>
     <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+
+        div{
+            height: 8cm;
+            width: 10.7cm;
+            border: 1px dashed red;
+        }
+
+        /*  10.7  8  */
         table {
-            font-family: Arial, sans-serif;
             border-collapse: collapse;
-            width: 700px;
-            margin-bottom: 30px;
-            margin-inline: 30px;
-          }
+            font-size: small;
+            width: 9.7cm;
+            height: 7cm;
+            margin: 0.5cm;
+        }
       
-          th, td {
+        th, td {
             border: 1px solid #dddddd;
-            text-align: left;
-            padding: 5px;
             text-align: center;
-          }
+            font-weight: bolder;
+        }
       
-          th {
+        th {
             background-color: #f2f2f2;
-          }
+        }
       </style>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -26,16 +37,6 @@
 <body>
     <div id="menu">
         <input type="file" id="fileInput" accept=".xlsx, .xls" />
-
-        <div>
-            <input type="radio" id="r1" name="contact" value="single"/>
-            <label for="contactChoice1">单列显示</label>
-    
-            <input type="radio" id="r2" name="contact" value="double" />
-            <label for="contactChoice2">双列显示</label>
-        </div>
-        
-        <button id="hide" style="display: hidden">隐藏菜单</button>
     </div>
     
     
@@ -96,7 +97,7 @@
 
                         var thePlanNo = td3.appendChild(document.createTextNode(material.planNo.split("-")[1]));
                         var span = document.createElement("span");
-                        span.style.fontSize = "25px";
+                        span.style.fontSize = "x-large";
                         span.style.fontWeight = "bolder";
                         span.appendChild(thePlanNo);
                         td3.appendChild(span);
@@ -114,7 +115,7 @@
                         td4.appendChild(document.createTextNode(material.totalAmount + "-" + (j+1)));
                         var img = document.createElement("img");
                         img.src = 'https://picdl.sunbangyan.cn/2023/11/18/d7a30ef05dfe0b9736b015ccd8f340c4.jpg';
-                        img.width = '100';
+                        img.width = '60';
                         td4.appendChild(document.createElement("br"));
                         td4.appendChild(img);
                         td4.appendChild(document.createElement("br"));
@@ -132,10 +133,11 @@
                 td.setAttribute("colspan",3);
                 row.appendChild(td);
                 table.appendChild(row);
-    
-                document.body.appendChild(table);
             }
 
+            var d = document.createElement("div");
+            d.appendChild(table);
+            document.body.appendChild(d);
         }
     }
 
@@ -172,6 +174,8 @@
                     extraNote = prompt("输入二维码位置显示的文字");
 
                     createTable();
+
+                    document.getElementById("menu").style.display = 'none';
                 };
                 reader.readAsArrayBuffer(file);
             });
