@@ -133,11 +133,13 @@
                 td.setAttribute("colspan",3);
                 row.appendChild(td);
                 table.appendChild(row);
+
+                
+                var d = document.createElement("div");
+                d.appendChild(table);
+                document.body.appendChild(d);
             }
 
-            var d = document.createElement("div");
-            d.appendChild(table);
-            document.body.appendChild(d);
         }
     }
 
@@ -179,29 +181,6 @@
                 };
                 reader.readAsArrayBuffer(file);
             });
-            
-        document.getElementById("hide").addEventListener('click', function(){
-            alert("菜单已隐藏，若想调整，请刷新页面重新操作")
-            document.getElementById("menu").style.display = 'none';
-        })
-
-        document.getElementById("r1").addEventListener('change', function(){
-            let tables = document.querySelectorAll('table');
-            tables.forEach(table =>{
-                table.style.width = '700px';
-                table.style.marginInline = '30px';
-                table.style.display = 'block';
-            })
-        })
-
-        document.getElementById("r2").addEventListener('change', function(){
-            let tables = document.querySelectorAll('table');
-            tables.forEach(table =>{
-                table.style.width = '340px';
-                table.style.marginInline = '20px';
-                table.style.display = 'inline-block'
-            })
-        })
     });
     
 </script>
