@@ -4,21 +4,23 @@
         body{
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         div{
-            height: 8cm;
-            width: 10.7cm;
+            height: 29%;
+            width: 46%;
+            margin: 1%;
             border: 1px dashed red;
+            display: inline-block;
         }
 
-        /*  10.7  8  */
         table {
             border-collapse: collapse;
             font-size: small;
-            width: 9.7cm;
-            height: 7cm;
-            margin: 0.5cm;
+            width: 90%;
+            height: 80%;
+            margin: 5%;
         }
       
         th, td {
@@ -38,6 +40,7 @@
     <div id="menu">
         <input type="file" id="fileInput" accept=".xlsx, .xls" />
     </div>
+    
     
     
 </body>
@@ -134,7 +137,6 @@
                 row.appendChild(td);
                 table.appendChild(row);
 
-                
                 var d = document.createElement("div");
                 d.appendChild(table);
                 document.body.appendChild(d);
@@ -153,10 +155,6 @@
                     var sheetName = workbook.SheetNames[0]; // 读取第一个工作表
                     var sheet = workbook.Sheets[sheetName];
                     var orgFile = XLSX.utils.sheet_to_json(sheet);
-
-                    console.log(orgFile);
-
-                    
 
                     var jsonArray = orgFile.map(function(item){
                         return{
