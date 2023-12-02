@@ -163,7 +163,7 @@
                 })
                 //jsonArray.shift();
                 console.log(jsonArray)
-                groupedData = arrGroup(jsonArray, (item) => item.taskNo + '&&' + item.materialDesc + '&&' + item.special);
+                groupedData = arrGroup(jsonArray, (item) => item.taskNo + '&&' + item.special + '&&' + item.no);
                 console.log(groupedData)
                 extraNote = prompt("输入二维码位置显示的文字");
                 createTable();
