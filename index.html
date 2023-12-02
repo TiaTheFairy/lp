@@ -39,9 +39,6 @@
     <div id="menu">
         <input type="file" id="fileInput" accept=".xlsx, .xls" />
     </div>
-    
-    
-    
 </body>
 <script>    
     let groupedData;
@@ -92,7 +89,6 @@
                     var td2 = document.createElement("td");
                     td2.appendChild(document.createTextNode(1));
                     row.appendChild(td2);
-        
                     
                     if (index === 0) {
                         var td3 = document.createElement("td");
@@ -110,7 +106,6 @@
                         td3.setAttribute("rowspan", groupedData[i].length);
                         row.appendChild(td3);
                     }
-                    
     
                     if (index === 0) {
                         var td4 = document.createElement("td");
@@ -146,38 +141,36 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('fileInput').addEventListener('change', function(e) {
-                var file = e.target.files[0];
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var data = new Uint8Array(e.target.result);
-                    var workbook = XLSX.read(data, { type: 'array' });
-                    var sheetName = workbook.SheetNames[0]; // 读取第一个工作表
-                    var sheet = workbook.Sheets[sheetName];
-                    var orgFile = XLSX.utils.sheet_to_json(sheet);
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var sheetName = workbook.SheetNames[0]; // 读取第一个工作表
+                var sheet = workbook.Sheets[sheetName];
+                var orgFile = XLSX.utils.sheet_to_json(sheet);
 
-                    var jsonArray = orgFile.map(function(item){
-                        return{
-                            "taskNo" : item["任务号"],
-                            "materialNo" : item["物料编码"],
-                            "totalAmount" : item["总量"],
-                            "no" : item["序号"],
-                            "special" : item["特殊描述"],
-                            "planNo" : item["装配计划号"]
-                        }
-                    })
-                    //jsonArray.shift();
-                    groupedData = arrGroup(jsonArray, (item) => item.taskNo);
-
-                    console.log(jsonArray)
-
-                    extraNote = prompt("输入二维码位置显示的文字");
-
-                    createTable();
-
-                    document.getElementById("menu").style.display = 'none';
-                };
-                reader.readAsArrayBuffer(file);
-            });
+                var jsonArray = orgFile.map(function(item){
+                    return{
+                        "taskNo" : item["任务号"],
+                        "materialNo" : item["物料编码"],
+                        "materialDesc" : item["物料描述"],
+                        "totalAmount" : item["总量"],
+                        "no" : item["序号"],
+                        "special" : item["计生号"] || item["特殊描述"],
+                        "planNo" : item["装配计划号"] || ""
+                    }
+                })
+                //jsonArray.shift();
+                console.log(jsonArray)
+                groupedData = arrGroup(jsonArray, (item) => item.taskNo + '&&' + item.materialDesc + '&&' + item.special);
+                console.log(groupedData)
+                extraNote = prompt("输入二维码位置显示的文字");
+                createTable();
+                document.getElementById("menu").style.display = 'none';
+            };
+            reader.readAsArrayBuffer(file);
+        });
     });
     
 </script>
