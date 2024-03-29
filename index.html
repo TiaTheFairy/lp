@@ -87,7 +87,7 @@
                     row.appendChild(td1);
         
                     var td2 = document.createElement("td");
-                    td2.appendChild(document.createTextNode(1));
+                    td2.appendChild(document.createTextNode(material.singleAmount));
                     row.appendChild(td2);
                     
                     if (index === 0) {
@@ -158,7 +158,9 @@
                         "totalAmount" : item["总量"],
                         "no" : item["序号"],
                         "special" : item["计生号"] || item["特殊描述"],
-                        "planNo" : item["装配计划号"] || ""
+                        "planNo" : item["装配计划号"] || "",
+                        "singleAmount" : item["单车用量"]
+      
                     }
                 })
                 //jsonArray.shift();
