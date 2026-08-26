@@ -36,18 +36,26 @@ body {
     align-items: center;
     gap: 12px;
 }
-
 .setting-qrcode {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+.qrcodeTextOptions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border: 1px solid black;
+}
 .qrcodeTextOption{
     cursor: pointer;
-    padding: 3px 2%;
+    padding: 3px 5%;
     border: 1px solid black;
     border-radius: 20px;
     line-height: 40px;
+    margin: 2%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .setting-label {
@@ -57,14 +65,7 @@ body {
     color: #374151;
 }
 
-.qrcodeTextOptions {
-    display: block;
-    border: 1px solid black;
-}
 
-.qrcodeTextOption {
-    margin: 5px;
-}
 
 input[type="file"] {
     flex: 1;
