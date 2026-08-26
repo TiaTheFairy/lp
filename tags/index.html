@@ -19,7 +19,8 @@
                         标签数量模式
                     </label>
                     <select id="tagMode">
-                        <option id="tagMode_decrease" value="decrease" selected>按用量递减</option>
+                        <option id="tagMode_smart" value="smart" selected>按计划数量递减</option>
+                        <option id="tagMode_decrease" value="decrease">按用量递减</option>
                         <option id="tagMode_fix" value="fix">按最大用量固定</option>
                     </select>
                 </div>
@@ -29,9 +30,9 @@
                         数量显示模式
                     </label>
                     <select id="quantityMode">
-                        <option id="quantityMode_read" value="read">从表格读取</option>
-                        <option id="quantityMode_1" value="1" selected>固定为1</option>
-                        <option id="quantityMode_dyn" value="dyn">依次动态选择</option>
+                        <option id="quantityMode_read" value="read" selected>从表格读取</option>
+                        <option id="quantityMode_1" value="1">固定为1</option>
+                        <option id="quantityMode_dyn" value="dyn">依次动态选择 (点击切换)</option>
                     </select>
                 </div>
 
@@ -42,7 +43,7 @@
                         </label>
                         <input type="text" id="qrcodeText" placeholder="请输入显示文字"/>
                     </div>
-                    <div id="qrcodeTextOptions"></div>
+                    <div id="qrcodeTextOptions" class="qrcodeTextOptions"></div>
                 </div>
             </div>
         </div>
