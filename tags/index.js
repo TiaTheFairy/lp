@@ -1,22 +1,44 @@
 let groupedData;
 let qrcodeText;
 
-let qrcodeTextOptions = ["电器分装线", "内饰高架线", "预装线", "分装线", "越野车A线", "越野车B线", "越野车B-10线"];
-if (localStorage.getItem("qrcodeTextOptions")) {
-  qrcodeTextOptions = JSON.parse(localStorage.getItem("qrcodeTextOptions"));
-  const options = document.getElementById("qrcodeTextOptions");
-  qrcodeTextOptions.forEach((option) => {
-    const opt = document.createElement("span");
-    opt.innerHTML = option;
-    opt.className = "qrcodeTextOption";
-    opt.addEventListener("click", () => {
-      document.getElementById("qrcodeText").value = option;
-      qrcodeText = option;
+initQrcodeTextOptions();
+
+function initQrcodeTextOptions() {
+  let qrcodeTextOptions = ["电器分装线", "内饰高架线", "预装线", "分装线", "越野车A线", "越野车B线", "越野车B-10线"];
+  if (localStorage.getItem("qrcodeTextOptions")) {
+    qrcodeTextOptions = JSON.parse(localStorage.getItem("qrcodeTextOptions"));
+    const options = document.getElementById("qrcodeTextOptions");
+    options.innerHTML = "";
+    qrcodeTextOptions.forEach((option) => {
+      const opt = document.createElement("div");
+      opt.id = "qrcodeTextOption_" + option;
+      opt.className = "qrcodeTextOption";
+
+      const optText = document.createElement("span");
+      optText.innerHTML = option;
+      opt.addEventListener("click", () => {
+        document.getElementById("qrcodeText").value = option;
+        qrcodeText = option;
+      });
+
+      const optDel = document.createElement("span");
+      optDel.innerHTML = "删除";
+      optDel.addEventListener("click", () => {
+        const confirmDelete = confirm("删除" + option + "？");
+        if (!confirmDelete) return;
+        console.log("delete qrcodeTextOption " + option);
+        qrcodeTextOptions = qrcodeTextOptions.filter((o) => o != option);
+        localStorage.setItem("qrcodeTextOptions", JSON.stringify(qrcodeTextOptions));
+        initQrcodeTextOptions();
+      });
+
+      opt.appendChild(optText);
+      opt.appendChild(optDel);
+      options.appendChild(opt);
     });
-    options.appendChild(opt);
-  });
-} else {
-  localStorage.setItem("qrcodeTextOptions", JSON.stringify(qrcodeTextOptions));
+  } else {
+    localStorage.setItem("qrcodeTextOptions", JSON.stringify(qrcodeTextOptions));
+  }
 }
 
 function arrGroup(arr, fn) {
@@ -76,6 +98,7 @@ function createTable() {
       });
       table.appendChild(header);
 
+      let shouldSkip = false;
       for (const index in groupedData[i]) {
         if (tagMode == "decrease" && printCount[index] <= 0) continue;
 
@@ -90,12 +113,12 @@ function createTable() {
         td2.id = "quantity_" + i + "_" + j + "_" + index;
 
         if (quantityMode == "1") td2.textContent = 1;
-        else if (quantityMode == "read") td2.textContent = material.totalAmount;
+        else if (quantityMode == "read") td2.textContent = material.singleAmount;
         else if (quantityMode == "dyn") {
-          td2.textContent = material.totalAmount;
+          td2.textContent = material.singleAmount;
           td2.style.cursor = "pointer";
           td2.addEventListener("click", function () {
-            this.textContent = this.textContent == 1 ? material.totalAmount : 1;
+            this.textContent = this.textContent == 1 ? material.singleAmount : 1;
           });
         }
 
@@ -119,7 +142,9 @@ function createTable() {
 
         if (index == 0) {
           let td4 = document.createElement("td");
-          td4.textContent = (tagMode == "fix" ? 1 : material.totalAmount) + "-" + (j + 1);
+          // td4.textContent = (tagMode == "fix" ? 1 : material.totalAmount) + "-" + (j + 1);
+          td4.textContent = tagMode == "fix" ? 1 : tagMode == "smart" ? material.planAmount : material.totalAmount;
+          td4.textContent = td4.textContent + "-" + (j + 1);
           let img = document.createElement("img");
           // img.src = "https://picdl.sunbangyan.cn/2023/11/18/d7a30ef05dfe0b9736b015ccd8f340c4.jpg"
           img.src = "img.png";
@@ -133,6 +158,11 @@ function createTable() {
 
         table.appendChild(row);
         printCount[index]--;
+
+        if (!shouldSkip) {
+          if (tagMode == "fix") shouldSkip = true;
+          if (tagMode == "smart" && (tagMode == "smart" ? material.planAmount : material.totalAmount) == 1) shouldSkip = true;
+        }
       }
 
       let last = document.createElement("tr");
@@ -146,7 +176,7 @@ function createTable() {
       box.appendChild(table);
       addLabel(box);
 
-      if (tagMode == "fix") break;
+      if (shouldSkip) break;
     }
   }
 }
@@ -166,16 +196,13 @@ document.getElementById("fileInput").addEventListener("change", function (e) {
 
     let jsonArray = rows.map((item) => ({
       taskNo: item["任务号"],
-
       materialNo: item["物料编码"],
-
       totalAmount: item["总量"],
-
       no: item["序号"],
-
       special: item["计生号"] || item["特殊描述"] || "",
-
       planNo: item["装配计划号"] || "",
+      planAmount: item["计划数量"],
+      singleAmount: item["单车用量"],
     }));
 
     groupedData = arrGroup(jsonArray, (item) => item.taskNo + "&&" + item.special + "&&" + item.no + "&&" + item.planNo);
