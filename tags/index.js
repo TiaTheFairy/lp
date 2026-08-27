@@ -161,7 +161,10 @@ function createTable() {
 
         if (!shouldSkip) {
           if (tagMode == "fix") shouldSkip = true;
-          if (tagMode == "smart" && (tagMode == "smart" ? material.planAmount : material.totalAmount) == 1) shouldSkip = true;
+          if (tagMode == "smart") {
+            if (material.planAmount == 1) shouldSkip = true;
+            if (j + 1 >= material.planAmount) shouldSkip = true;
+          }
         }
       }
 
@@ -178,6 +181,13 @@ function createTable() {
 
       if (shouldSkip) break;
     }
+  }
+
+  const result = document.getElementById("content");
+  if (result.children.length == 0) {
+    const warning = document.createElement("div");
+    warning.innerText = "Excel 格式不正确。或未包含以下某个字段: 任务号、物流编码、总量、序号、计生号/物料描述、装配计划号、计划数量、单车用量";
+    result.appendChild(warning);
   }
 }
 
@@ -215,7 +225,7 @@ document.getElementById("fileInput").addEventListener("change", function (e) {
 
     createTable();
 
-    if (!qrcodeTextOptions.includes(qrcodeText)) {
+    if (qrcodeText != "" && !qrcodeTextOptions.includes(qrcodeText)) {
       qrcodeTextOptions.push(qrcodeText);
       localStorage.setItem("qrcodeTextOptions", JSON.stringify(qrcodeTextOptions));
     }
